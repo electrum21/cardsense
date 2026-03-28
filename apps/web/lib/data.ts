@@ -60,11 +60,19 @@ export async function getSupabaseCollections() {
     };
   }
 
-  const [{ data: cashbackCards }, { data: signupOffers }, { data: merchantOffers }] = await Promise.all([
+  const [
+    { data: cashbackCards, error: cashbackError },
+    { data: signupOffers, error: signupError },
+    { data: merchantOffers, error: merchantError }
+  ] = await Promise.all([
     supabase.from("cashback_cards").select("*").limit(8),
     supabase.from("signup_offers").select("*").limit(8),
-    supabase.from("merchant_offers").select("*").limit(8)
+    supabase.from("merchant_offers").select("*").order("cashback_rate_number", { ascending: false }).limit(8)
   ]);
+
+  console.log("cashback_cards error:", cashbackError);
+  console.log("signup_offers error:", signupError);
+  console.log("merchant_offers error:", merchantError);
 
   return {
     cashbackCards: cashbackCards ?? [],
