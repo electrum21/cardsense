@@ -26,12 +26,13 @@ app.get("/api/health/db", async (_request, response) => {
 
 app.get("/api/summary", async (_request, response, next) => {
   try {
-    const [{ data: overview, error }, snapshot] = await Promise.all([
-      supabaseAdmin.from("dashboard_overview").select("*").single(),
-      fetchDashboardData()
-    ]);
+    const snapshot = await fetchDashboardData();
 
-    if (error) throw error;
+    const overview = {
+      cashbackCardsCount: snapshot.cashbackCards.length,
+      merchantOffersCount: snapshot.merchantOffers.length,
+      signupOffersCount: snapshot.signupOffers.length
+    };
 
     response.json({
       overview,
@@ -61,8 +62,25 @@ app.post("/api/recommendations", async (request, response, next) => {
 });
 
 app.use((error: unknown, _request: express.Request, response: express.Response, _next: express.NextFunction) => {
-  const message = error instanceof Error ? error.message : "Unknown server error";
-  response.status(500).json({ error: message });
+  console.error("Unhandled error:", error);
+
+  if (error instanceof z.ZodError) {
+    return response.status(400).json({
+      error: "Invalid request body",
+      details: error.flatten()
+    });
+  }
+
+  if (error instanceof Error) {
+    return response.status(500).json({
+      error: error.message
+    });
+  }
+
+  return response.status(500).json({
+    error: "Non-Error thrown",
+    details: error
+  });
 });
 
 app.listen(env.PORT, () => {
