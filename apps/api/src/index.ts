@@ -5,6 +5,7 @@ import { env } from "./config.js";
 import { supabaseAdmin } from "./lib/supabase.js";
 import { ingestTinyFishPayload } from "./services/ingest.js";
 import { buildAiRecommendation, fetchDashboardData } from "./services/insights.js";
+import type { TinyFishRecord } from "./types.js";
 
 const app = express();
 
@@ -56,13 +57,34 @@ app.post("/api/recommendations", async (request, response, next) => {
   }
 });
 
+const tinyFishRecordSchema = z.object({
+  category_name: z.string(),
+  url: z.string(),
+  run_id: z.string(),
+  final_run_data: z
+    .object({
+      status: z.string().optional(),
+      result: z
+        .object({
+          result: z.unknown().optional()
+        })
+        .optional()
+    })
+    .optional()
+});
+
+const ingestSchema = z.object({
+  results: z.array(tinyFishRecordSchema).optional()
+});
+
 app.post("/api/ingest/tinyfish", async (request, response, next) => {
   try {
     if (request.header("x-ingest-secret") !== env.INGEST_SHARED_SECRET) {
       return response.status(401).json({ error: "Unauthorized ingestion request." });
     }
 
-    const result = await ingestTinyFishPayload(request.body as { results?: unknown[] });
+    const body = ingestSchema.parse(request.body);
+    const result = await ingestTinyFishPayload(body);
     return response.json({ ok: true, ...result });
   } catch (error) {
     next(error);
