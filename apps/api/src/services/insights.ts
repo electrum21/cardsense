@@ -5,9 +5,9 @@ import { supabaseAdmin } from "../lib/supabase.js";
 export async function fetchDashboardData() {
   const [{ data: cashbackCards, error: cashbackError }, { data: signupOffers, error: signupError }, { data: merchantOffers, error: merchantError }] =
     await Promise.all([
-      supabaseAdmin.from("cashback_cards").select("*").order("created_at", { ascending: false }).limit(50),
-      supabaseAdmin.from("signup_offers").select("*").order("created_at", { ascending: false }).limit(50),
-      supabaseAdmin.from("merchant_offers").select("*").order("cashback_rate_number", { ascending: false }).limit(50)
+      supabaseAdmin.from("cashback_cards").select("*").limit(50),
+      supabaseAdmin.from("signup_offers").select("*").limit(50),
+      supabaseAdmin.from("merchant_offers").select("*").limit(50)
     ]);
 
   if (cashbackError) throw cashbackError;
