@@ -11,8 +11,12 @@ const app = express();
 app.use(cors({ origin: env.CORS_ORIGIN }));
 app.use(express.json({ limit: "5mb" }));
 
-app.get("/api/health", async (_request, response) => {
-  const { error } = await supabaseAdmin.from("dashboard_overview").select("*").limit(1);
+app.get("/api/health", (_request, response) => {
+  response.json({ ok: true });
+});
+
+app.get("/api/health/db", async (_request, response) => {
+  const { error } = await supabaseAdmin.from("cashback_cards").select("id").limit(1);
 
   response.json({
     ok: !error,
