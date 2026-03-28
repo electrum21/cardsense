@@ -18,6 +18,38 @@ type SummaryPayload = {
   };
 };
 
+type CashbackCard = {
+  id: string;
+  card_name: string | null;
+  bank: string | null;
+  card_type: string | null;
+  annual_fee: string | null;
+};
+
+type SignupOffer = {
+  id: string;
+  card_name: string | null;
+  bank: string | null;
+  reward_description: string | null;
+  reward_value: string | null;
+  minimum_spend_to_unlock: number | null;
+  spend_within_days: number | null;
+};
+
+type MerchantOffer = {
+  id: string;
+  merchant: string | null;
+  cashback_rate: string | null;
+  cashback_rate_number: number | null;
+  category: string | null;
+};
+
+type CollectionsPayload = {
+  cashbackCards: CashbackCard[];
+  signupOffers: SignupOffer[];
+  merchantOffers: MerchantOffer[];
+};
+
 export async function getSummary() {
   try {
     const response = await fetch(`${env.apiBaseUrl}/api/summary`, {
@@ -49,23 +81,34 @@ export async function getSummary() {
   }
 }
 
-export async function getSupabaseCollections() {
-  try {
-    const response = await fetch(`${env.apiBaseUrl}/api/collections`, {
-      next: { revalidate: 300 }
-    });
+export async function getSupabaseCollections(): Promise<CollectionsPayload> {
+  const supabase = createSupabaseServerClient();
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch collections");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("collections fetch error:", error);
+  if (!supabase) {
     return {
       cashbackCards: [],
       signupOffers: [],
       merchantOffers: []
     };
   }
+
+  const [
+    { data: cashbackCards, error: cashbackError },
+    { data: signupOffers, error: signupError },
+    { data: merchantOffers, error: merchantError }
+  ] = await Promise.all([
+    supabase.from("cashback_cards").select("*").limit(8),
+    supabase.from("signup_offers").select("*").limit(8),
+    supabase.from("merchant_offers").select("*").order("cashback_rate_number", { ascending: false }).limit(8)
+  ]);
+
+  console.error("cashback_cards error:", cashbackError);
+  console.error("signup_offers error:", signupError);
+  console.error("merchant_offers error:", merchantError);
+
+  return {
+    cashbackCards: (cashbackCards ?? []) as CashbackCard[],
+    signupOffers: (signupOffers ?? []) as SignupOffer[],
+    merchantOffers: (merchantOffers ?? []) as MerchantOffer[]
+  };
 }
