@@ -250,45 +250,6 @@ export function SignupOffersBrowser({ offers }: Props) {
     </div>
   );
 }
-
-function SelectField({
-  label,
-  value,
-  onChange,
-  options,
-  hideLabel = false
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: { value: string; label: string }[];
-  hideLabel?: boolean;
-}) {
-  return (
-    <div>
-      {!hideLabel && <label className="mb-2 block text-sm text-white/60">{label}</label>}
-
-      <div className="relative">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full appearance-none rounded-2xl border border-white/10 bg-slate-800 px-4 py-3 pr-10 text-white outline-none focus:border-cyan-400"
-        >
-          {options.map((option) => (
-            <option key={option.value} value={option.value} className="bg-slate-900 text-white">
-              {option.label}
-            </option>
-          ))}
-        </select>
-
-        <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-white/50">
-          ▼
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
