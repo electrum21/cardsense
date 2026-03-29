@@ -7,7 +7,7 @@ from datetime import datetime
 # ==========================================
 # 1. CONFIGURATION
 # ==========================================
-API_KEY = "sk-tinyfish-XXBu4APK8SWnReC1OY4_KwMX2Go_mch9"  # replace with your real TinyFish API key
+API_KEY = "TINYFISH_API_KEY"  # replace with your real TinyFish API key
 BASE_URL = "https://agent.tinyfish.ai/v1"
 
 POLL_INTERVAL_SECONDS = 5
