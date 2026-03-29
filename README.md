@@ -1,88 +1,210 @@
-# TinyFish Credit Intelligence
+# 🧠 CardSense — Singapore Credit Card Intelligence Platform
 
-A deployment-ready full-stack app for turning TinyFish scrape output into a polished Singapore credit-card intelligence dashboard.
+CardSense is a full-stack web application that transforms fragmented credit card data into a **centralized, decision-ready intelligence platform** for Singapore users.
 
-The project is split into:
+Developed by a team of 3 during the **TinyFish AI Hackathon at Acacia College, NUS**, this project explores how structured data and AI can be combined to simplify financial decision-making.  
+The platform is **actively being improved and expanded** beyond the hackathon prototype.
 
-- `apps/web`: Next.js App Router frontend designed for Vercel
-- `apps/api`: Express + TypeScript backend designed for Render
-- `supabase/schema.sql`: normalized tables, views, and policies
+---
 
-## What the app does
+## ✨ Core Idea
 
-- imports TinyFish async result payloads into Supabase
-- stores bank cashback cards, signup promos, merchant cashback offers, and restaurant deals
-- shows a Vercel-ready frontend with executive summary metrics and curated sections
-- exposes a Render-friendly API for ingestion, insight summaries, and AI recommendations
-- includes placeholders for TinyFish, OpenAI, and Supabase environment variables
+Choosing the right credit card is difficult because information is:
+- scattered across bank websites and aggregators  
+- inconsistent in format  
+- hard to compare meaningfully  
 
-## Recommended deployment setup
+CardSense solves this by:
+- aggregating data into a unified schema  
+- enabling powerful filtering and comparison  
+- layering AI on top for personalized recommendations  
 
-### 1. Supabase
+---
 
-1. Create a new Supabase project.
-2. Run [`supabase/schema.sql`](C:\Users\aweso\OneDrive\Documents\Playground\supabase\schema.sql).
-3. Copy values into `.env` from `.env.example`.
+## 🐟 Role of TinyFish
 
-### 2. Backend on Render
+At the heart of CardSense is **TinyFish**, which acts as the **data acquisition and extraction engine**.
 
-1. Create a new Web Service on Render pointing at `apps/api`.
-2. Build command: `npm install && npm run build`
-3. Start command: `npm run start`
-4. Add the backend environment variables from `.env.example`.
-5. Optional: use [`render.yaml`](C:\Users\aweso\OneDrive\Documents\Playground\render.yaml) as a starting point.
+### How TinyFish is used:
 
-### 3. Frontend on Vercel
+- **Web scraping orchestration**  
+  TinyFish runs structured scraping workflows across:
+  - bank websites  
+  - aggregator platforms (e.g. MoneySmart)  
+  - merchant cashback platforms (e.g. ShopBack, Eatigo)
 
-1. Import this repo into Vercel.
-2. Set the root directory to `apps/web`.
-3. Add the public frontend variables plus Supabase anon credentials.
-4. Set `NEXT_PUBLIC_API_BASE_URL` to your Render service URL.
+- **AI-powered data extraction**  
+  Instead of returning raw HTML, TinyFish extracts structured fields such as:
+  - card names, banks, and types  
+  - cashback rates and categories  
+  - signup rewards and conditions  
+  - merchant cashback rates  
+  - promotion metadata  
 
-## Importing TinyFish data
+- **Asynchronous run system**  
+  Each scrape is executed as a TinyFish run:
+  - tracked via `run_id`  
+  - returns `final_run_data` payloads  
+  - supports multiple source categories  
 
-The backend exposes:
+- **Multi-source categorization**  
+  Data is tagged by source type:
+  - `BANK_CASHBACK`  
+  - `BANK_SIGNUP`  
+  - `SHOPBACK`  
+  - `EATIGO`  
+  - `MONEYSMART`  
 
-- `POST /api/ingest/tinyfish`
+- **Foundation for the data pipeline**  
+  TinyFish outputs are ingested into Supabase via custom scripts, where they are:
+  - normalized  
+  - deduplicated  
+  - structured into relational tables  
 
-Send the full TinyFish JSON payload as the request body and include:
+👉 TinyFish transforms messy web data into **AI-ready structured datasets**, enabling the rest of the system.
 
-- Header: `x-ingest-secret: <INGEST_SHARED_SECRET>`
+---
 
-Example:
+## 🚀 Key Functionalities
 
-```bash
-curl -X POST https://your-render-service.onrender.com/api/ingest/tinyfish \
-  -H "Content-Type: application/json" \
-  -H "x-ingest-secret: your-secret" \
-  --data @tinyfish_async_results_20260328_124339.json
-```
+### 🏦 1. Card Explorer
+Browse and compare credit cards in a structured, searchable interface.
 
-## Environment split
+**Capabilities:**
+- Filter by:
+  - Bank  
+  - Card type  
+  - Annual fee (**Free / Waived / Paid**)  
+- Sort by cashback potential  
+- View normalized cashback categories  
 
-### Frontend on Vercel
+---
 
-- `NEXT_PUBLIC_APP_NAME`
-- `NEXT_PUBLIC_SITE_URL`
-- `NEXT_PUBLIC_API_BASE_URL`
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+### 🎁 2. Signup Offers Aggregation
+Centralizes promotional offers across banks and aggregators.
 
-### Backend on Render
+**Capabilities:**
+- Filter by:
+  - Bank  
+  - Reward type  
+  - Exclusivity  
+- Sort by:
+  - Highest reward value  
+  - Nearest expiry  
+- View:
+  - reward value  
+  - minimum spend  
+  - spend window  
+  - expiry  
 
-- `API_PORT`
-- `CORS_ORIGIN`
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `OPENAI_API_KEY`
-- `OPENAI_MODEL`
-- `INGEST_SHARED_SECRET`
-- `TINYFISH_API_KEY`
-- `TINYFISH_BASE_URL`
-- `TINYFISH_WEBHOOK_SECRET`
+---
 
-## Notes
+### 🛍 3. Merchant Cashback Intelligence
+Surfaces high-value cashback opportunities from merchant platforms.
 
-- The implementation is modeled on the TinyFish output you shared.
-- The PDF text extractor available in this environment was limited, so the product framing is inferred from the provided scrape categories and data model.
-- The codebase is ready to install and run on a machine with Node.js 20+.
+**Capabilities:**
+- Filter by category  
+- Sort by highest cashback  
+- Designed for **stacking with cards**
+
+---
+
+### 🤖 4. AI Advisor (Recommendation Engine)
+
+Transforms structured data into personalized recommendations.
+
+**How it works:**
+1. User inputs preferences (natural language)  
+2. Backend retrieves structured data from Supabase  
+3. Data is injected into an AI prompt  
+4. AI selects and explains best-fit cards  
+
+👉 This is a **retrieval-augmented system**, grounded in real data.
+
+---
+
+### 🔍 5. Data Normalization Layer
+
+Bridges TinyFish outputs with a usable product.
+
+**Capabilities:**
+- Converts heterogeneous JSON into structured tables:
+  - `cashback_cards`  
+  - `signup_offers`  
+  - `merchant_offers`  
+  - `card_promotions`  
+- Handles:
+  - inconsistent formats  
+  - missing fields  
+  - numeric extraction (e.g. cashback rates)  
+
+---
+
+### 🧩 6. Multi-Source Data Integration
+
+Combines multiple ecosystems into a unified model:
+
+- Bank-issued cards  
+- Signup promotions  
+- Aggregator insights  
+- Merchant cashback deals  
+
+This enables:
+- cross-source comparison  
+- richer card profiles  
+- future stacking logic  
+
+---
+
+## 🧠 System Design Philosophy
+
+CardSense is built as a **data-first, AI-assisted system**:
+
+- **TinyFish → Data ingestion & extraction**  
+- **Supabase → Structured storage**  
+- **Backend → filtering + logic**  
+- **AI → reasoning + explanation**  
+
+This avoids relying purely on AI and instead combines:
+
+> structured logic + intelligent reasoning
+
+---
+
+## 🚧 Current Status
+
+Originally developed during a hackathon, CardSense is now:
+
+- actively being refined  
+- expanding data coverage  
+- improving recommendation quality  
+- enhancing UI/UX  
+
+---
+
+## 🔮 Future Directions
+
+- Card detail pages with full breakdowns  
+- Smarter recommendation engine (hybrid scoring + AI)  
+- Promotion stacking logic  
+- Deduplication across sources  
+- Spend optimization tools  
+- Real-time updates  
+
+---
+
+## 👥 Team
+
+Built by a team of 3 during the  
+**TinyFish AI Hackathon @ Acacia College, NUS**
+
+---
+
+## 💡 Motivation
+
+This project explores how AI can move beyond chat interfaces into:
+- structured decision systems  
+- real-world financial applications  
+- user-centric product design  
+
+---
