@@ -3,36 +3,9 @@
 import { useMemo, useState } from "react";
 import type { SignupOffer } from "@/lib/data";
 
-type Option = {
-  value: string;
-  label: string;
-};
-
 type Props = {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: Option[];
+  offers: SignupOffer[];
 };
-
-export function SelectField({ label, value, onChange, options }: Props) {
-  return (
-    <div className="xl:col-span-2"> {/* 🔥 THIS IS KEY */}
-      <label className="mb-2 block text-sm text-white/60">{label}</label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full min-w-[160px] rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none focus:border-cyan-400"
-      >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value} className="bg-slate-900">
-            {opt.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
 
 type ExclusiveFilter = "all" | "exclusive" | "non_exclusive";
 type SignupSortKey = "bank" | "card_name" | "reward_value" | "expiry";
@@ -174,7 +147,7 @@ export function SignupOffersBrowser({ offers }: Props) {
 
           <div className="flex items-center gap-3">
             <label className="text-sm text-white/60">Sort by</label>
-            <div className="w-52">
+            <div className="w-56">
               <SelectField
                 label=""
                 hideLabel
@@ -250,6 +223,45 @@ export function SignupOffersBrowser({ offers }: Props) {
     </div>
   );
 }
+
+function SelectField({
+  label,
+  value,
+  onChange,
+  options,
+  hideLabel = false
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  hideLabel?: boolean;
+}) {
+  return (
+    <div className="xl:col-span-2">
+      {!hideLabel && <label className="mb-2 block text-sm text-white/60">{label}</label>}
+
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full min-w-[160px] appearance-none rounded-2xl border border-white/10 bg-slate-800 px-4 py-3 pr-10 text-white outline-none focus:border-cyan-400"
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value} className="bg-slate-900 text-white">
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-white/50">
+          ▼
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
