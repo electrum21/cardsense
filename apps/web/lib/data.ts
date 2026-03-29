@@ -69,6 +69,48 @@ export type MerchantOffer = {
   raw_payload?: unknown;
 };
 
+export type CardPromotion = {
+  id: string;
+  card_id: string | null;
+  source: string | null;
+  source_url: string | null;
+  tinyfish_run_id: string | null;
+  bank: string | null;
+  card_name: string | null;
+  card_type: string | null;
+  promo_type: string | null;
+  reward_value: string | null;
+  reward_description: string | null;
+  minimum_spend_to_unlock: number | null;
+  spend_within_days: number | null;
+  promo_expiry_date: string | null;
+  annual_fee: string | null;
+  is_exclusive_deal: boolean | null;
+  exclusive_promo_code: string | null;
+  extra_gift: string | null;
+  estimated_total_value: string | null;
+  source_section: string | null;
+  raw_payload?: unknown;
+};
+
+export async function getPromotionsForCard(cardId: string): Promise<CardPromotion[]> {
+  const supabase = createSupabaseServerClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("card_promotions")
+    .select("*")
+    .eq("card_id", cardId)
+    .order("promo_expiry_date", { ascending: true });
+
+  if (error) {
+    console.error("getPromotionsForCard error:", error);
+    return [];
+  }
+
+  return (data ?? []) as CardPromotion[];
+}
+
 export type CollectionsPayload = {
   cashbackCards: CashbackCard[];
   signupOffers: SignupOffer[];

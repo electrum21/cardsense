@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { CashbackCard } from "@/lib/data";
+import Link from "next/link";
 
 type Props = {
   cards: CashbackCard[];
@@ -218,6 +219,16 @@ export function CardsBrowser({ cards }: Props) {
                 {card.special_conditions ?? "--"}
               </div>
             </div>
+
+            <div className="mt-5">
+              <Link
+                href={`/cards/${card.id}`}
+                className="inline-flex rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/10"
+              >
+                View full details
+              </Link>
+            </div>
+
           </div>
         ))}
 

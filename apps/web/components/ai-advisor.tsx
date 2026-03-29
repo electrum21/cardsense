@@ -90,17 +90,9 @@ export function AiAdvisor() {
         AI Concierge
       </div>
 
-      <h2 className="text-2xl font-semibold">Turn raw scrape output into a decision-ready recommendation.</h2>
-
-      <p className="mt-2 max-w-3xl text-sm text-white/60">
-        This panel calls your Render backend, which uses OpenAI against the latest records stored in Supabase.
-      </p>
+      <h2 className="text-2xl font-semibold">Describe your monthly spend, preferred reward type, annual fee preference, and travel habits...</h2>
 
       <div className="mt-6">
-        <label htmlFor="advisor-preferences" className="mb-2 block text-sm font-medium text-white/75">
-          Your preferences
-        </label>
-
         <textarea
           id="advisor-preferences"
           value={preferences}
